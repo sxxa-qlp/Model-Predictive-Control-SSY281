@@ -25,7 +25,7 @@ syms tausym
 B1 = double( expm(Ac*(h-tau)) * int(expm(Ac*tausym)*Bc,tausym,0,tau) );
 B2 = double( int(expm(Ac*tausym)*Bc,tausym,0,h-tau) );
 
-Aa = [A B; 0*(Ac*Bc)' 0*Bc'*Bc];
+Aa = [A B1; 0*(Ac*Bc)' 0*Bc'*Bc];
 Ba = [B2; 1];
 Ca = [C 0];
 Da = Dc;
@@ -55,6 +55,11 @@ C_nonobsv = [c1_val c2_val];
 svd(obsv(Ac,C_nonobsv))         % rank defficient
 svd(obsv(A, C_nonobsv))         % rank defficient
 svd(obsv(Aa, [C_nonobsv 0]))    % rank defficient
+
+
+% Question 5
+minreal(Ca*inv(tf('z')*eye(3) - Aa)*Ba)
+
 
 
 
