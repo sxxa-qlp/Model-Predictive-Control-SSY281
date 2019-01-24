@@ -19,6 +19,7 @@ C = sysd.C;
 %% Delayed model
 % define Aa, Ba, Ca, Da according to Question #2
 
+h = 0.1;
 tau = 0.5*h;
 syms tausym
 
@@ -57,11 +58,6 @@ svd(obsv(A, C_nonobsv))         % rank defficient
 svd(obsv(Aa, [C_nonobsv 0]))    % rank defficient
 
 
-% Question 5
-minreal(Ca*inv(tf('z')*eye(3) - Aa)*Ba)
-
-
-
 
 %% Controller design
 lambda1=-4+6*1i;
@@ -69,18 +65,21 @@ lambda2=-4-6*1i;
 
 %calculate desired poles for the discrete time system (3) and define them as p1 and
 %p2 as it is asked in Question #6
-%p1=
-%p2=
+p1 = exp(lambda1*h);
+p2 = exp(lambda2*h);
 
 %define the feedback gain for the discrete time system (3) as K1
-%K1=
+K1 = place(A, B, [p1,p2]);
 
 %define the feedback gain for the delayed discrete time system (4) as K2
-%K2=
-
+K2 = place(Aa, Ba, [p1 p2 0]);  %exp(real(lambda1)*10*h)
 
 %plot the step response of the systems in one figure. Your figure should
 %have labels and legend.
+figure('Color','white')
+step( ss(A-B*K1, B, C, 0, h) ,'-k', ...
+      ss(Aa-Ba*K2, Ba, Ca, 0, h), '--b')
+legend({'',''})
 
 
 %% Steady State
