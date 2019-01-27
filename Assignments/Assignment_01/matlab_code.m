@@ -6,20 +6,25 @@ Ac=[0 1;0.5 0];Bc=[0;1];Cc=[1 0];Dc=0;
 
 %define the sampling time here
 wn = damp(Ac);
-h = [1 0] * (2*pi./(2*wn));    % [s]
+h = pi/wn(1);    % [s]
 
 %Use given parameters and find A, B, and C in Question #1
 sys=ss(Ac,Bc,Cc,Dc);
 sysd=c2d(sys,h);
-
 A = sysd.A;
 B = sysd.B;
-C = sysd.C; 
+C = sysd.C;
+
 
 %% Delayed model
 % define Aa, Ba, Ca, Da according to Question #2
 
 h = 0.1;
+syms si
+A = expm(Ac*h);
+B = double(int(expm(Ac*si)*Bc,si,0,h));
+C = Cc;
+
 tau = 0.5*h;
 syms tausym
 
@@ -76,10 +81,18 @@ K2 = place(Aa, Ba, [p1 p2 0]);  %exp(real(lambda1)*10*h)
 
 %plot the step response of the systems in one figure. Your figure should
 %have labels and legend.
-figure('Color','white')
-step( ss(A-B*K1, B, C, 0, h) ,'-k', ...
-      ss(Aa-Ba*K2, Ba, Ca, 0, h), '--b')
-legend({'',''})
+[step1, stept] = step( ss(A-B*K1, B,  C, 0, h) , 3);
+step2 = step( ss(Aa-Ba*[K1 0], Ba, Ca, 0, h) , 3);
+step3 = step( ss(Aa-Ba*K2, Ba, Ca, 0, h) , 3);
+
+close all
+figure('Color','white'), hold on, grid on;
+stairs(stept, step1, '-', 'LineWidth', 2);
+stairs(stept, step2, '--', 'LineWidth', 2);
+stairs(stept, step3, '--', 'LineWidth', 2);
+title 'Step in reference r(k)', xlabel 'Time [s]', ylabel 'Step-response amplitude \theta(k)'
+legend({'Close-loop (2) - K1','Close-loop (4) - K1','Close-loop (4) - K2'})
+% fp.savefig('Kplace');
 
 
 %% Steady State
@@ -87,29 +100,68 @@ ys=pi/6;
 % plot the system output as explained in Question #7. Your figure should
 %have labels and legend.
 
+x = sym('x',[3,1]);
+syms u
+eq = [x == Aa*x + Ba*u;
+      ys == Ca*x];
+answ = solve(eq);
+xs = double([answ.x1; answ.x2; answ.x3]);
+us = double(answ.u);
+
+x0 = zeros(3,1);
+dx = [];
+dx(:,1) = x0 - xs;
+t=0:h:3;
+for i=2:numel(t)
+    du = -K2*dx(:,i-1);
+    dx(:,i) = Aa*dx(:,i-1) + Ba*du;
+end
+y = Ca*(dx + xs);
+
+figure('Color','white'), hold on, grid on;
+stairs(t,y,'-', 'LineWidth', 2);
+title 'Step in reference r(k)', xlabel 'Time [s]', ylabel 'Step-response amplitude \theta(k)'
+legend({'Close-loop (4) - K2'})
+% fp.savefig('Rtracking');
+
 
 %% disturbance
 Bd=[0;1;0];
+
 % define Ae, Be, Ce, and De as asked in Question #8
-%Ae=
-%Be=
-%Ce=
-%De=
+nd = size(Bd,2);
+n  = size(Aa,1);
+Ae = [Aa Bd; 0*(Aa*Bd)' eye(nd)];
+Be = [Ba; zeros(nd,1)];
+Ce = [Ca zeros(nd,1)];
+De = 0;
 
 %define the rank of the controllability and observability matrices as
+sys6_c = rank(ctrb(Ae,Be));
+eig(Ae);
+rank([1.0733*eye(4)-Ae Be])  % unstable pole is controllable
+rank([1*eye(4)-Ae Be])       % marginally stable pole is not controllable
+% => system is not stabilizable
 
-%sys6_c=
-%sys6_o=
+sys6_o = rank(obsv(Ae,Ce));
+
 
 
 %% Feedback gain
 %define the controller gain as K3 according to Question #9
-%K3=
+K3 = place(Aa,[Ba Bd],[p1 p2 .999]);
+eig(Aa-[Ba Bd]*K3)
 
-
+step(ss(Aa-[Ba Bd]*K3, [Ba Bd], Ca, 0, h))
 
 
 %% Observer
 %define L as the observer gain according to Question #10
-%L=
+
+L = place(Ae', Ce', [0.1, 0.2, 0.3, 0.4])';
+
+
+
+
+
 
