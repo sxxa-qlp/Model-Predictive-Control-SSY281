@@ -149,7 +149,7 @@ sys6_o = rank(obsv(Ae,Ce));
 
 %% Feedback gain
 %define the controller gain as K3 according to Question #9
-K3 = place(Aa,[Ba Bd],[p1 p2 .999]);
+K3 = place(Aa,[Ba Bd],[p1 p2 1]);
 eig(Aa-[Ba Bd]*K3)
 
 step(ss(Aa-[Ba Bd]*K3, [Ba Bd], Ca, 0, h))
