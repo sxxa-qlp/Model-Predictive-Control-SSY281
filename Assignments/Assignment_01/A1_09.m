@@ -58,9 +58,9 @@ c1_val = 1;
 c2_val = double(subs(c2_nonobsv(1),c1,c1_val));
 C_nonobsv = [c1_val c2_val];
 
-svd(obsv(Ac,C_nonobsv))         % rank defficient
-svd(obsv(A, C_nonobsv))         % rank defficient
-svd(obsv(Aa, [C_nonobsv 0]))    % rank defficient
+svd(obsv(Ac,C_nonobsv));         % rank defficient
+svd(obsv(A, C_nonobsv));         % rank defficient
+svd(obsv(Aa, [C_nonobsv 0]));    % rank defficient
 
 
 
@@ -139,8 +139,8 @@ De = 0;
 %define the rank of the controllability and observability matrices as
 sys6_c = rank(ctrb(Ae,Be));
 eig(Ae);
-rank([1.0733*eye(4)-Ae Be])  % unstable pole is controllable
-rank([1*eye(4)-Ae Be])       % marginally stable pole is not controllable
+rank([1.0733*eye(4)-Ae Be]);  % unstable pole is controllable
+rank([1*eye(4)-Ae Be]);       % marginally stable pole is not controllable
 % => system is not stabilizable
 
 sys6_o = rank(obsv(Ae,Ce));
@@ -149,11 +149,11 @@ sys6_o = rank(obsv(Ae,Ce));
 
 %% Feedback gain
 %define the controller gain as K3 according to Question #9
-K3 = place(Aa,[Ba Bd],[p1 p2 1]);
-eig(Aa-[Ba Bd]*K3)
+K3 = place(Ae,Be,[p1 p2 0 1]);
+eig(Ae-Be*K3);
 
-step(ss(Aa-[Ba Bd]*K3, [Ba Bd], Ca, 0, h))
-
+% figure
+% step(ss(Ae-Be*K3, Be, Ce, 0, h))
 
 %% Observer
 %define L as the observer gain according to Question #10
