@@ -19,21 +19,21 @@ C = sysd.C;
 %% Delayed model
 % define Aa, Ba, Ca, Da according to Question #2
 
-h = 0.1;
+hd = 0.1;
 syms si
-A = expm(Ac*h);
-B = double(int(expm(Ac*si)*Bc,si,0,h));
-C = Cc;
+Ad = expm(Ac*hd);
+Bd = double(int(expm(Ac*si)*Bc,si,0,hd));
+Cd = Cc;
 
-tau = 0.5*h;
+tau = 0.5*hd;
 syms tausym
 
-B1 = double( expm(Ac*(h-tau)) * int(expm(Ac*tausym)*Bc,tausym,0,tau) );
-B2 = double( int(expm(Ac*tausym)*Bc,tausym,0,h-tau) );
+B1 = double( expm(Ac*(hd-tau)) * int(expm(Ac*tausym)*Bc,tausym,0,tau) );
+B2 = double( int(expm(Ac*tausym)*Bc,tausym,0,hd-tau) );
 
-Aa = [A B1; 0*(Ac*Bc)' 0*Bc'*Bc];
+Aa = [Ad B1; 0*(Ac*Bc)' 0*Bc'*Bc];
 Ba = [B2; 1];
-Ca = [C 0];
+Ca = [Cd 0];
 Da = Dc;
 
 
@@ -45,8 +45,8 @@ Da = Dc;
 
 sys2_c = rank(ctrb(Ac,Bc));
 sys2_o = rank(obsv(Ac,Cc));
-sys3_c = rank(ctrb(A,B));
-sys3_o = rank(obsv(A,C));
+sys3_c = rank(ctrb(Ad,Bd));
+sys3_o = rank(obsv(Ad,Cd));
 sys4_c = rank(ctrb(Aa,Ba));
 sys4_o = rank(obsv(Aa,Ca));
 
@@ -59,7 +59,7 @@ c2_val = double(subs(c2_nonobsv(1),c1,c1_val));
 C_nonobsv = [c1_val c2_val];
 
 svd(obsv(Ac,C_nonobsv));         % rank defficient
-svd(obsv(A, C_nonobsv));         % rank defficient
+svd(obsv(Ad, C_nonobsv));        % rank defficient
 svd(obsv(Aa, [C_nonobsv 0]));    % rank defficient
 
 
@@ -70,20 +70,20 @@ lambda2=-4-6*1i;
 
 %calculate desired poles for the discrete time system (3) and define them as p1 and
 %p2 as it is asked in Question #6
-p1 = exp(lambda1*h);
-p2 = exp(lambda2*h);
+p1 = exp(lambda1*hd);
+p2 = exp(lambda2*hd);
 
 %define the feedback gain for the discrete time system (3) as K1
-K1 = place(A, B, [p1,p2]);
+K1 = place(Ad, Bd, [p1,p2]);
 
 %define the feedback gain for the delayed discrete time system (4) as K2
 K2 = place(Aa, Ba, [p1 p2 0]);  %exp(real(lambda1)*10*h)
 
 %plot the step response of the systems in one figure. Your figure should
 %have labels and legend.
-[step1, stept] = step( ss(A-B*K1, B,  C, 0, h) , 3);
-step2 = step( ss(Aa-Ba*[K1 0], Ba, Ca, 0, h) , 3);
-step3 = step( ss(Aa-Ba*K2, Ba, Ca, 0, h) , 3);
+[step1, stept] = step( ss(Ad-Bd*K1, Bd,  Cd, 0, hd) , 3);
+step2 = step( ss(Aa-Ba*[K1 0], Ba, Ca, 0, hd) , 3);
+step3 = step( ss(Aa-Ba*K2, Ba, Ca, 0, hd) , 3);
 
 close all
 figure('Color','white'), hold on, grid on;
@@ -111,7 +111,7 @@ us = double(answ.u);
 x0 = zeros(3,1);
 dx = [];
 dx(:,1) = x0 - xs;
-t=0:h:3;
+t=0:hd:3;
 for i=2:numel(t)
     du = -K2*dx(:,i-1);
     dx(:,i) = Aa*dx(:,i-1) + Ba*du;
