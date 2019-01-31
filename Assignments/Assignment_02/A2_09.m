@@ -10,18 +10,66 @@ Q=[5 0;0 1];
 Pf=[5 0;0 1];
 R=0.5;
 
+stable = false;
+N2 = 0;
+while ~stable
+    N2 = N2+1;
+    [K0,P0] = DP_09(A,B,N2,Q,R,Pf);
+    if all(abs(eig(A-B*K0))<=1)
+        stable = true;
+    end
+end
+
+Pf
+N2
+eig(A-B*K0)
+P0
+K0
+
 %N2= the shortest N!
 
 %% Q3: Define Pf3 as the solution to the Riccati Equation; define N3 that gives the shortest N, i.e. N3=min(N) subject to the system stability
 
+[Pf3,~,~] = dare(A,B,Q,R);
+
+stable = false;
+N3 = 0;
+while ~stable
+    N3 = N3+1;
+    [K0,P0] = DP_09(A,B,N3,Q,R,Pf3);
+    if all(abs(eig(A-B*K0))<=1)
+        stable = true;
+    end
+end
+
+Pf3
+N3
+eig(A-B*K0)
+P0
+K0
 
 %N3= the shortest N!
 %Pf3= the shortest N!
 
 %% Q4: Fill the BS_XX.m function using the batch solution approach.
 
-
 %% Q5: Find the shortest N that stabilizes the system using BS_XX.m; define N5 that gives the shortest N, i.e. N5=min(N) subject to the system stability
+
+stable = false;
+N5 = 0;
+while ~stable
+    N5 = N5+1;
+    [K0,P0] = BS_09(A,B,N5,Q,R,Pf);
+    if all(abs(eig(A-B*K0))<=1)
+        stable = true;
+    end
+end
+
+Pf
+N5
+eig(A-B*K0)
+P0
+K0
 
 
 %N5=the shortest N!
