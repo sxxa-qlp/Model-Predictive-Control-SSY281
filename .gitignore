@@ -1,2 +1,6 @@
 *.eps
 *.asv
+*.autosave
+*/slprj/*
+*.mat
+*.l
