@@ -1,4 +1,4 @@
-function [K0,P0]=DP_XX(A,B,N,Q,R,Pf)
+function [K0,P0]=DP_09(A,B,N,Q,R,Pf)
 %% A and B are the system matrices when x(k+1)=Ax(k)+Bu(k)
 %% Q, R, and Pf are the gains in the cost function
 %% N is the length of the horizon
