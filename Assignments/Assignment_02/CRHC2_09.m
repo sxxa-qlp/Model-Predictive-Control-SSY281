@@ -20,7 +20,7 @@ function [Z,VN]=CRHC2_09(A,B,N,Q,R,Pf,F1,G1,h1,F2,G2,h2,x0)
     
 %% Define LQ quadratic minimization equation
     
-    H = gamma'*Qb*gamma + Rb;
+    H = 0.5*gamma'*Qb*gamma + Rb;
     f = (2*x0'*omega'*Qb*gamma)';
 
 %% Define inequalities constraints

@@ -30,16 +30,16 @@ function [Z,VN]=CRHC1_09(A,B,N,Q,R,Pf,F1,G1,h1,F2,G2,h2,x0)
     f = zeros(size(H,1),1);
 
 %% Define inequalities constraints
-    Aleq = [F2,G2];     % [ kron(eye(N),F2) , kron(eye(N),G2) ];
-    bleq = h2;          % kron(ones(N,1),h2);
+    Aleq = [F2,G2];
+    bleq = h2;
     
 %% Define system dynamics + equalities constraints
     
     % System dynamics: x = omega*x0 + gamma*u
-    Aeq = [kron(eye(N),eye(size(A))), -gamma  ;
-           F1,G1];   % kron(eye(N),F1) , kron(eye(N),G1)
+    Aeq = [kron(eye(N),eye(size(A))), -gamma;
+           F1,G1];
     beq = [omega*x0;
-           h1];       % kron(ones(N,1),h1)
+           h1];
 
 %% Solve
     options = optimoptions('quadprog','Display','none');
