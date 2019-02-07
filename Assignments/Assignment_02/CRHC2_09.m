@@ -18,9 +18,9 @@ function [Z,VN]=CRHC2_09(A,B,N,Q,R,Pf,F1,G1,h1,F2,G2,h2,x0)
     Qb = blkdiag( kron(eye(N-1),Q), Pf );
     Rb = kron(eye(N),R);
     
-%% Define LQ quadratic minimization equation
+%% Define LQ quadratic minimization equation (0.5*x'*H*x + f'*x)
     
-    H = 0.5*gamma'*Qb*gamma + Rb;
+    H = 2*(gamma'*Qb*gamma + Rb);
     f = (2*x0'*omega'*Qb*gamma)';
 
 %% Define inequalities constraints

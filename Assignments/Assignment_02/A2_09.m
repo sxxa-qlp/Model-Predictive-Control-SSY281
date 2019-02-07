@@ -52,7 +52,6 @@ K0
 %Pf3= the shortest N!
 
 %% Q4: Fill the BS_XX.m function using the batch solution approach.
-
 %% Q5: Find the shortest N that stabilizes the system using BS_XX.m; define N5 that gives the shortest N, i.e. N5=min(N) subject to the system stability
 
 stable = false;

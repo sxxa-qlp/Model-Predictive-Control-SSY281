@@ -9,9 +9,6 @@ function [Z,VN]=CRHC1_09(A,B,N,Q,R,Pf,F1,G1,h1,F2,G2,h2,x0)
     % F1*x + G1*u =  h1
     % F2*x + G2*u <= h2
     % Z = [x ; u]
-    
-    % min x0'*Q*x0 + x'*Qb*x + u'*Rb*u  -> 0.5*z'*H*z + f'*z
-    % => H = 2*blkdiag(Qb,Rb)
 
 %% Batch parameters
 
@@ -25,16 +22,19 @@ function [Z,VN]=CRHC1_09(A,B,N,Q,R,Pf,F1,G1,h1,F2,G2,h2,x0)
     Rb = kron(eye(N),R);
     
 %% Define LQ quadratic minimization equation
-    
+
+    % min x0'*Q*x0 + x'*Qb*x + u'*Rb*u  -> 0.5*z'*H*z + f'*z
+    % => H = 2*blkdiag(Qb,Rb)
     H = 2*blkdiag(Qb,Rb);
     f = zeros(size(H,1),1);
 
 %% Define inequalities constraints
+
     Aleq = [F2,G2];
     bleq = h2;
     
 %% Define system dynamics + equalities constraints
-    
+
     % System dynamics: x = omega*x0 + gamma*u
     Aeq = [kron(eye(N),eye(size(A))), -gamma;
            F1,G1];
