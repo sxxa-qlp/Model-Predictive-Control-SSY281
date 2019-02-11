@@ -173,7 +173,7 @@ function [x,u] = sim_MPC(A,B,N,Q,R,Pf,F1,G1,h1,F2,G2,h2,x0,tf)
     u = [];
     for t=1:tf
         [Z,~]=CRHC1_09(A,B,N,Q,R,Pf,F1,G1,h1,F2,G2,h2,x(:,t));
-        u(:,t) = Z(end-N+1,:);        
+        u(:,t) = Z(end-N+1:end-N+size(B,2),:);
         x(:,t+1) = A*x(:,t) + B*u(:,t);
     end
 end
