@@ -128,7 +128,7 @@ x0 = [0.01;1;0.1]; % initial condition of system's state
 %==========================================================================
 %% choose one case, i.e. a, b, or c and then write the code for that case! for the other ones
 % you just need to change the example case!
-example = 'c';
+example = 'a';
 switch example
     case 'a'
         nd = 2;
@@ -236,8 +236,13 @@ x(:,1)  = x0;
 %         du = -K0*dx;
 %         u(:,k) = du + us;
 
-        [du,~] = CRHC2_09(A,B,N,M,Q,R,Pf,[],[],[],[],[],[],dx);    
+        [du,~] = CRHC2_09(A,B,N,M,Q,R,Pf,[],[],[],[],[],[],dx);
         u(:,k) = du(1:m) + us;
+        
+        [u0,z]=RHC(A,B,Q,R,Pf,N,M,dx);
+        u(:,k) = u0 + us;
+        
+        err(:,k) = du(1:m) - u0;
         
         %=============================
         % Update the observer state
@@ -256,6 +261,7 @@ x(:,1)  = x0;
 
    end % simulation loop
  
+   
         %%
 %==========================================================================
 % Plot results
@@ -266,29 +272,29 @@ x(:,1)  = x0;
     
     subplot(3,2,1)
     stairs(x(1:n,:)', 'LineWidth',2)
-    ylabel 'x'
+    ylabel 'x', grid on
     legend;
     
     subplot(3,2,2)
     stairs(xe_h(1:n,:)', 'LineWidth',2)
-    ylabel 'x hat'
+    ylabel 'x hat', grid on
     legend;
     
     subplot(3,2,3)
     stairs(x(1:n,:)'-xe_h(1:n,:)', 'LineWidth',2)
-    ylabel 'estimation error x'
+    ylabel 'estimation error x', grid on
     
     subplot(3,2,4)
     stairs(xe_h(end-nd+1:end,:)', 'LineWidth',2)
-    ylabel 'd hat'
+    ylabel 'd hat', grid on
     
     subplot(3,2,5)
     stairs( (H*(C*x(:,1:tf)-ysp'))', 'LineWidth',2)
-    ylabel 'error zsp'
+    ylabel 'error zsp', grid on
     
     subplot(3,2,6)
     stairs(u', 'LineWidth',2)
-    ylabel 'u'
+    ylabel 'u', grid on
     
 
     
@@ -318,23 +324,21 @@ function [Z,VN]=CRHC2_09(A,B,N,M,Q,R,Pf,F1,G1,h1,F2,G2,h2,x0)
     Qb = blkdiag( kron(eye(N-1),Q), Pf );
     Rb = kron(eye(N),R);
     
-% Define LQ quadratic minimization equation (0.5*x'*H*x + f'*x)
-    
+    % Define LQ quadratic minimization equation (0.5*x'*H*x + f'*x)    
     H = 2*(gamma'*Qb*gamma + Rb);
     f = (2*x0'*omega'*Qb*gamma)';
 
-% Define inequalities constraints
-    
+    % Define inequalities constraints
     % F2*x + G2*u < h2  => F2*(omega*x0+gamma*u) + G2*u < h2 
     %                   => (F2*gamma+G2)*u < h2-F2*omega*x0
     if ~isempty(F2)
-        Aleq = F2*gamma+G2;
-        bleq = h2-F2*omega*x0;
+        Ain = F2*gamma+G2;
+        bin = h2-F2*omega*x0;
     else
-        Aleq = []; bleq= [];
+        Ain = []; bin= [];
     end
-% Define system dynamics + equalities constraints
-
+    
+    % Define system dynamics + equalities constraints
     % F1*x + G1*u = h1
     % After control horizon, the inputs is kept constant
     Aeq = kron([zeros(N-M,M-1) -1*ones(N-M,1) eye(N-M)], eye(size(B,2)));
@@ -344,8 +348,8 @@ function [Z,VN]=CRHC2_09(A,B,N,M,Q,R,Pf,F1,G1,h1,F2,G2,h2,x0)
         beq = [ beq ; h1-F1*omega*x0];
     end
 
-% Solve
+    % Solve
     options = optimoptions('quadprog','Display','none');
-    [Z,VN,~] = quadprog(H,f, Aleq,bleq, Aeq,beq, [],[], [],options);
+    [Z,VN,~] = quadprog(H,f, Ain,bin, Aeq,beq, [],[], [],options);
 end
 

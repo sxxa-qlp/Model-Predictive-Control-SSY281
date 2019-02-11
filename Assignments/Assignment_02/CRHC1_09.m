@@ -9,6 +9,8 @@ function [Z,VN]=CRHC1_09(A,B,N,Q,R,Pf,F1,G1,h1,F2,G2,h2,x0)
     % F1*x + G1*u =  h1
     % F2*x + G2*u <= h2
     % Z = [x ; u]
+    
+    % This functions is programmed following algorithm 45 (page 43)
 
 %% Batch parameters
 
@@ -30,8 +32,8 @@ function [Z,VN]=CRHC1_09(A,B,N,Q,R,Pf,F1,G1,h1,F2,G2,h2,x0)
 
 %% Define inequalities constraints
 
-    Aleq = [F2,G2];
-    bleq = h2;
+    Ain = [F2,G2];
+    bin = h2;
     
 %% Define system dynamics + equalities constraints
 
@@ -43,6 +45,6 @@ function [Z,VN]=CRHC1_09(A,B,N,Q,R,Pf,F1,G1,h1,F2,G2,h2,x0)
 
 %% Solve
     options = optimoptions('quadprog','Display','none');
-    [Z,VN,exitflag] = quadprog(H,f, Aleq,bleq, Aeq,beq, [],[], [],options);
+    [Z,VN,~] = quadprog(H,f, Ain,bin, Aeq,beq, [],[], [],options);
     
 end
