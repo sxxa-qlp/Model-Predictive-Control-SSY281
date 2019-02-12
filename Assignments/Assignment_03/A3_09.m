@@ -72,10 +72,9 @@ m = size(B,2);  % inputs
 n = size(A,1);  % states
 
 
-% min   (us-usp)'*Rs*(us-usp) + (C*xs-ysp)'*Qs*(C*xs-ysp)
-Qs = eye(p);
-H = 2* blkdiag( C'*Qs*C , eye(m) );
-f = [ (-2*z_sp'*Qs*C)' ; zeros(m,1) ];
+% min   (us-usp)'*Rs*(us-usp)
+H = 2* blkdiag( zeros(n) , eye(m) );
+f = [ zeros(n,1) ; zeros(m,1) ];
 
 Aeq = [eye(n)-A -B; C 0*C*B];
 beq = [zeros(n,1) ; z_sp];
@@ -128,7 +127,7 @@ x0 = [0.01;1;0.1]; % initial condition of system's state
 %==========================================================================
 %% choose one case, i.e. a, b, or c and then write the code for that case! for the other ones
 % you just need to change the example case!
-example = 'a';
+example = 'c';
 switch example
     case 'a'
         nd = 2;
@@ -173,7 +172,7 @@ R = eye(p);
 
 abs(lambda)
 
-% Kalman FIlter - filtering case
+% Kalman Filter - filtering case
 Le = Ae\L'                         % Same result as P*Ce' / (Ce*P*Ce'+R)   
 
 %% Question 6
@@ -225,24 +224,11 @@ x(:,1)  = x0;
         %=============================
         x_h = xe_h(1:n, k);
         dx = x_h - xs;
-        
-%         P = cell(N+1,1);
-%         P{N+1} = Pf;        % P0=P{1}, Pf=PN=P{N+1}
-%         for i=N+1:-1:2
-%             P{i-1} = Q + A'*P{i}*A - A'*P{i}*B*inv(R + B'*P{i}*B)*B'*P{i}*A;
-%         end
-%         K0 = inv(R+B'*P{2}*B)*B'*P{2}*A;
-%         P0 = P{1};
-%         du = -K0*dx;
-%         u(:,k) = du + us;
 
         [du,~] = CRHC2_09(A,B,N,M,Q,R,Pf,[],[],[],[],[],[],dx);
-        u(:,k) = du(1:m) + us;
-        
-        [u0,z]=RHC(A,B,Q,R,Pf,N,M,dx);
-        u(:,k) = u0 + us;
-        
-        err(:,k) = du(1:m) - u0;
+        u(:,k) = du(1:m) + us;       
+%         [u0,z]=RHC(A,B,Q,R,Pf,N,M,dx);
+%         u(:,k) = u0 + us;
         
         %=============================
         % Update the observer state
@@ -261,24 +247,22 @@ x(:,1)  = x0;
 
    end % simulation loop
  
-   
-        %%
+
 %==========================================================================
 % Plot results
 %==========================================================================
-    close all
+%     close all
     
-    figure('Color','white')
+    figure('Color','white', 'Position', [250.6000   44.2000  779.2000  717.6000])
     
     subplot(3,2,1)
     stairs(x(1:n,:)', 'LineWidth',2)
     ylabel 'x', grid on
-    legend;
+    legend({'x1','x2','x3'});
     
     subplot(3,2,2)
     stairs(xe_h(1:n,:)', 'LineWidth',2)
     ylabel 'x hat', grid on
-    legend;
     
     subplot(3,2,3)
     stairs(x(1:n,:)'-xe_h(1:n,:)', 'LineWidth',2)
@@ -287,20 +271,24 @@ x(:,1)  = x0;
     subplot(3,2,4)
     stairs(xe_h(end-nd+1:end,:)', 'LineWidth',2)
     ylabel 'd hat', grid on
+    legend({'d1','d2','d3'});
     
     subplot(3,2,5)
     stairs( (H*(C*x(:,1:tf)-ysp'))', 'LineWidth',2)
     ylabel 'error zsp', grid on
+    legend({'zsp_1','zsp_2','zsp_3'});
     
     subplot(3,2,6)
     stairs(u', 'LineWidth',2)
     ylabel 'u', grid on
+    legend({'u_1','u_2','u_3'});
     
-
+    sgtitle(['System ' example])
+    
+%     fp.savefig(['system-',example]);
     
    % plot the states, the state estimations, and the input and report them
    % in the report.
-
    
 %% LQ solver
 
