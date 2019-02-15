@@ -27,9 +27,9 @@ classdef fp
         
         function latexcode = m2latex(matrix)
             if ~isa(matrix,'sym')
-                matrix = vpa(sym(matrix));
+                matrix = sym(matrix);
             end
-            latexcode = latex(vpa(matrix));
+            latexcode = latex(vpa(simplify(matrix)));
             latexcode = strrep(latexcode,'(','[');
             latexcode = strrep(latexcode,')',']');
             clipboard('copy',latexcode);
