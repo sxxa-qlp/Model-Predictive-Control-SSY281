@@ -100,41 +100,21 @@ K0
 % answer by checking it numerically in Matlab (this is just for your own
 % and you should not provide any code regarding this)
 
-% PART A
-
 syms Rs
+
 K = @(R) (R + B'*Pf*B) \ B'*Pf*A;
-eigT = @(R) eig(A-B*K(R))
+eigP = @(R) eig(A-B*K(R))
 
-eigT(Rs)
+eigP(Rs)
 
-abs(eigT(0.091))
+abs(eigP(0.091))
 
 Rv = linspace(0.001,2,200);
 for i=1:numel(Rv)
-    polesabs(i,:) = abs(eigT(Rv(i)));
+    polesabs(i) = abs(eigP(Rv(i)));
 end
-figure('Color','white'), grid on, hold on;
-plot(Rv, polesabs, 'Linewidth', 2)
-xlabel 'R', ylabel 'abs(eig(A-BK))', title 'N=1'
-
-
-% PART B
-
-P1 = @(R) Q + A'*Pf*A - A'*Pf*B*(R + B'*Pf*B)^-1*B'*Pf*A;
-P1(Rs)
-K = @(R) (R + B'*P1(R)*B) \ B'*P1(R)*A;
-eigT = @(R) eig(A-B*K(R))
-
-simplify(eigT(Rs))
-
-Rv = linspace(0.001,10,200);
-for i=1:numel(Rv)
-    polesabs(i,:) = abs(eigT(Rv(i)));
-end
-figure('Color','white'), grid on, hold on;
-plot(Rv, polesabs, 'Linewidth', 2)
-xlabel 'R', ylabel 'abs(eig(A-BK))', title 'N=2'
+figure('Color','white')
+plot()
 
 %% Q6
 % answer in the report
