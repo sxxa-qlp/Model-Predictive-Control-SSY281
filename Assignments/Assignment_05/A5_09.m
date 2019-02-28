@@ -82,6 +82,7 @@ while ~stable && ~isinf(Rnew)
     [K0,P0] = DP_09(A,B,N,Q,Rnew,Pf);
     if all(abs(eig(A-B*K0))<=1)
         stable = true;
+        break;
     end
     Rnew = Rnew/10
 end
@@ -138,9 +139,5 @@ xlabel 'R', ylabel 'abs(eig(A-BK))', title 'N=2'
 
 %% Q6
 % answer in the report
-
-[P,~,~] = dare(A,B,Q,R)
-[K0,P0] = DP_09(A,B,N,Q,Rnew,P);
-eig(A-B*K)
 
 
