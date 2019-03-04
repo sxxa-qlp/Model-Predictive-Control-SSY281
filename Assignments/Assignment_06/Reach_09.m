@@ -4,4 +4,15 @@ function P=Reach_09(A,B,S,U)
 % U is the polytope for feasible inputs
 % P is the polytope Reach(S)
 
+    % Also works
+    % P2 = A*S + B*U;
+
+    Ain = [S.A/A    -S.A/A*B
+           zeros(size(U.A,1),size(S.A/A,2)) U.A];
+    bin = [S.b; U.b];
+
+    Pext = Polyhedron('A',Ain, 'b',bin);
+
+    P = projection(Pext,1:length(A));
+
 end
