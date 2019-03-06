@@ -4,7 +4,6 @@ function P=Pre_09(A,B,S,U)
 % U is the polytope for feasible inputs
 % P is the polytope Pre(S)
 
-
     Ain = [S.A*A    S.A*B
            zeros(size(U.A,1),size(S.A*A,2))     U.A];
     bin = [S.b; U.b];

@@ -74,8 +74,7 @@ for i=1:1
     plot(P_R,'alpha',0.6);
 end
 axis equal
-legend({'S','Reach(S)'})
-% fp.savefig('cis')
+fp.savefig('cis')
 
 
 
@@ -93,14 +92,10 @@ P = Polyhedron('A',Ain,'b',bin);
 
 U = Polyhedron('lb',-1,'ub',1);
 
-Reach = Reach_09(A,B,P,U);
+R = Reach_09(A,B,P,U);
 
-figure('Color','white','Position',[608   390   179   336])
-plot(P,'alpha',0.6,Reach,'alpha',0.2)
+plot(P,'alpha',0.5,R,'alpha',0.5)
 axis equal
-legend({'S','Reach(S)'})
-% fp.savefig('reach')
-
 
 
 %% Q5
@@ -117,13 +112,10 @@ P = Polyhedron('A',Ain,'b',bin);
 
 U = Polyhedron('lb',-1,'ub',1);
 
-Pre = Pre_09(A,B,P,U);
+R = Pre_09(A,B,P,U);
 
-figure('Color','white','Position',[603   514   186   207])
-plot(P,'alpha',0.6,Pre,'alpha',0.2)
+plot(P,'alpha',0.5,R,'alpha',0.5)
 axis equal
-legend({'S','Pre(S)'})
-% fp.savefig('pre')
 
 
 %% Q6
@@ -167,18 +159,6 @@ Xf2 = model.invariantSet;
 N=2;
 [Z,exitflag] = RHCXf_09(A,B,N,Q,R,Pf,x_ub,u_ub,Xf2,x0)
 
-figure('Color','white', 'Position',[454   448   311   298])
-plot(Xf2,'color','red','alpha',0.5)
-axis equal
-legend({'X_f2'})
-% fp.savefig('xf2')
-
-
-% Check if system is stable for x0 \in Xf
-[K0,P0]=DP_09(A,B,N,Q,R,Pf)
-abs(eig(A-B*K0))
-
-
 
 % part 3: Plot the feasible sets for the initial condition in part 1 and 2
 % and plot those sets. Answer to the rest of the question in the report. 
@@ -190,10 +170,36 @@ U = Polyhedron( 'lb', -u_ub, 'ub', u_ub);
 XN1 = model.reachableSet('X',Xf1,'U',U,'N',26,'direction','backward')
 XN2 = model.reachableSet('X',Xf2,'U',U,'N',2,'direction','backward')
 
-figure('Color','white', 'Position',[454   448   311   298])
-plot(XN2,'color','red','alpha',0.2, XN1,'color','red','alpha',0.6)
+plot(XN1,'color','black','alpha',0.5,XN2,'color','red','alpha',0.5)
 axis equal
-legend({'X_N2','X_N1'})
-fp.savefig('xn')
+
+
+
+
+
+% model = LTISystem('A', [1 1; 0 1], 'B', [1; 0.5]);
+% model.x.min = [-5; -5];
+% model.x.max = [5; 5];
+% model.u.min = -1;
+% model.u.max = 1;
+% Q = [1 0; 0 1];
+% model.x.penalty = QuadFunction(Q);
+% R = 1;
+% model.u.penalty = QuadFunction(R);
+% N = 5;
+% mpc = MPCController(model, N)
+% 
+% % x0 = [4; 0];
+% % u = mpc.evaluate(x0)
+% % [u, feasible, openloop] = mpc.evaluate(x0)
+% 
+% 
+% 
+% InvSet = model.invariantSet()
+% InvSet.plot()
+
+
+
+
 
 

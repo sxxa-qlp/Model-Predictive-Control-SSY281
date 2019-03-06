@@ -17,11 +17,16 @@ function P=Reach_09(A,B,S,U)
 %     P = projection(Pext,1:length(A));
     
     
-
-
-%     a = A*S;
-%     
-%     b = Polyhedron('V',(A*S.V')')
-%     plot(a,'alpha',0.3,b,'alpha',0.3)
+    a = A*S;
+    
+    b = Polyhedron('V',(A*S.V')')
+    plot(a,'alpha',0.3,b,'alpha',0.3)
+    
+    
+    c = Polyhedron('A',S.A*A, 'b',S.b)
+    plot(a,'alpha',0.3,c,'alpha',0.3)
+    
+    d = S.affineMap(A)
+    plot(a,'alpha',0.3,d,'alpha',0.3)
 
 end
