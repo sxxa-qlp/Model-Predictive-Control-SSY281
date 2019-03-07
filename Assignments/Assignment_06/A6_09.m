@@ -194,6 +194,6 @@ figure('Color','white', 'Position',[454   448   311   298])
 plot(XN2,'color','red','alpha',0.2, XN1,'color','red','alpha',0.6)
 axis equal
 legend({'X_N2','X_N1'})
-fp.savefig('xn')
+% fp.savefig('xn')
 
 
