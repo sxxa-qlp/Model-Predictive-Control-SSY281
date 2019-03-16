@@ -6,18 +6,20 @@ classdef fp
     
     methods(Static)
         
-        % varargin{1}: figure handle to be saved. If not specified -> gcf
         function savefig(fname,varargin)
-            figformat = 'epsc';
-            folder = fullfile(pwd,'images');
-            if nargin <=1
-                fighandle = gcf;
-            else
-                fighandle = varargin{1};
-            end
-            if ~ exist(folder,'dir'), mkdir(folder); end
-            set(gca,'LooseInset',get(gca,'TightInset'))
-            saveas(fighandle, fullfile(folder,fname),figformat)
+            
+            p = inputParser;
+          
+            defaultFormat  = 'epsc';
+            expectedFormat = {'epsc','svg','png','jpg'};
+            addParameter(p,'format',defaultFormat, @(x) any(validatestring(x,expectedFormat)));
+            addParameter(p,'fighandle',gcf, @(x) isa(a,'matlab.ui.Figure'));
+            addParameter(p,'folder',fullfile(pwd,'images'), @(x) isa(a,'char'));      
+            parse(p,varargin{:});
+            
+            if ~ exist(p.Results.folder,'dir'), mkdir(p.Results.folder); end
+            set(p.Results.fighandle.CurrentAxes,'LooseInset',p.Results.fighandle.CurrentAxes.TightInset)
+            saveas(p.Results.fighandle, fullfile(p.Results.folder,fname), p.Results.format)
         end
         
         function fig = f()
