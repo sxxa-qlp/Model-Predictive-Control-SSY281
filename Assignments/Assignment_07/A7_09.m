@@ -7,8 +7,6 @@ close all;clear;clc;
 
 
 % https://www.mpt3.org/UI/RegulationProblem
-
-
 A=[1.2 1;0 1]; B=[0;1];
 
 x0=[2;0];
@@ -106,6 +104,7 @@ legend({'X','XN=Cinf','Xf'})
 % to use some functions in the code, you can write them in different matlab
 % files and submit them with the rest of your files
 
+% Based on the following examples:
 % https://yalmip.github.io/example/standardmpc/
 % https://www.mpt3.org/Main/CustomMPC
 
@@ -117,7 +116,7 @@ select_case = 3;    % 1, 2 or 3
 
 
 % Model data
-load('HW5_data.mat')
+load('A7_data.mat')
 dt = 3600;      % dt = 1 hour
 C = 9.2e3;
 R = 50;
@@ -223,7 +222,7 @@ sgtitle(sprintf('Controller n: %.f      Ju=%.1f , Jp=%.1f,  Je=%.1f',select_case
 clearvars
 
 % Model data
-load('HW5_data.mat')
+load('A7_data.mat')
 dt = 60;        % dt = 1 minute
 C = 9.2e3;
 R = 50;
@@ -297,11 +296,11 @@ sgtitle(sprintf('Controller P      Ju=%.1f , Jp=%.1f,  Je=%.1f',Ju,Jp,Je))
 %% Help functions
 
 function Z = pre_operation(model,S,steps)
-    X=Polyhedron('lb',model.x.min,'ub',model.x.max);
-    U=Polyhedron('lb',model.u.min,'ub',model.u.max);
-    Z=S;
+    X = Polyhedron('lb',model.x.min, 'ub',model.x.max);
+    U = Polyhedron('lb',model.u.min, 'ub',model.u.max);
+    Z = S;
     for i=1:steps
-       R = model.reachableSet('X', Z, 'U', U, 'N', 1,  'direction', 'backward');
+       R = model.reachableSet('X',Z, 'U',U, 'N',1, 'direction','backward');
        Z = X.intersect(R);
     end
 end

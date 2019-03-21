@@ -65,8 +65,7 @@ X = Polyhedron('A',[C;-C],'B',[T_b(2); -T_b(1)]);
 U = Polyhedron('lb',V_b(1),'ub',V_b(2));
 
 xsdp = sdpvar(nx, 1)
-% Xf = Polyhedron( [-0.1<=xsdp([2,4])<=0.1 ;-Inf<=xsdp([1,3])<=Inf ] ); %
-Xf = Polyhedron( [-0.1<=xsdp([2,4])<=0.1 ;-Inf<=xsdp([1,3])<=Inf ] ); %
+Xf = Polyhedron( [-0.1<= xsdp([2,4]) <= 0.1 ;-100<= xsdp([1,3]) <= 100] ); %
 
 % define model
 model = LTISystem('A', A, 'B', B, 'C', C);
@@ -78,20 +77,25 @@ model.x.penalty = QuadFunction(Q);
 model.u.penalty = QuadFunction(R);
 model.x.with('terminalSet');
 model.x.terminalSet = Xf;
-% mintime = EMinTimeController(model)
+mintime = EMinTimeController(model)
+
+% Xf = model.invariantSet();
+% plotP(Xf)
 
 K = Xf;
-isin = false; iN = 0;
-while ~isin
-    iN = iN+1
+for iN=1:Nmax
     K(iN+1) = model.reachableSet('X', K(iN), 'U', U, 'N', 1, 'direction', 'backward');
-    isin =  all(K(end).A*x0-K(end).b <= 0);
+    iN
+    if all(K(end).A*x0-K(end).b <= 0)
+        break;
+    end
 end
-% plotP(K(end))
+plotP(K(end))
+
 
 isin = false;
 K(1) = Xf;
-for i=1:iN
+for i=1:Nmax
     K(i+1) = model.reachableSet('X', K(i), 'U', U, 'N', 1, 'direction', 'backward');
     
     % optimization variables
@@ -118,15 +122,15 @@ for i=1:iN
 %     plot(Valuefunction);
 %     figure
 %     plot(Optimal_z);
-    if isempty(sol{1})
-        error('Empty parametric solution');
-        return;
-    end
 
-    [isin,j] = isinside(sol{1}.Pn,x0);
-    if isin
-        sol{1}.Fi{j}*x0 + sol{1}.Gi{j};
+    if ~isempty(sol{1})
+        [isin,j] = isinside(sol{1}.Pn,x0);
+%         sol{1}.Fi{j}*x0v + sol{1}.Gi{j};
     end
+    if isin
+        break;
+    end
+    
 end
 
 
